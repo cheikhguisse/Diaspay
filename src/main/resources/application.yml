@@ -1,0 +1,57 @@
+spring:
+  application:
+    name: geo-immo-app
+
+  profiles:
+    active: dev   # Par défaut on démarre sur le profil dev (H2)
+
+---
+# ===============================
+# Profil DEV : H2 Database
+# ===============================
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  datasource:
+    url: jdbc:h2:mem:geoimmo-db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: update   # crée/maj automatiquement les tables (à garder en dev)
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console   # tu peux accéder à http://localhost:8080/h2-console
+
+---
+# ===============================
+# Profil PROD : PostgreSQL + PostGIS
+# ===============================
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/geoimmo_db
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: postgres   # ⚠️ à changer
+
+  jpa:
+    hibernate:
+      ddl-auto: validate   # on vérifie que le schéma existe déjà en prod
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.spatial.dialect.postgis.PostgisDialect
